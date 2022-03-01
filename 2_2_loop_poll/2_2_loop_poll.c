@@ -16,6 +16,7 @@
 #include <libopencm3/stm32/i2c.h>
 
 #include "clock.h"
+#include "gpio.h"
 #include "i2s.h"
 #include "wm8960.h"
 
@@ -23,11 +24,7 @@
 
 static void setup(void) {
     clock_setup();
-
-    // setup GPIOs
-    rcc_periph_clock_enable(RCC_GPIOD);
-    gpio_mode_setup(PORT_LED, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, PIN_LED0 | PIN_LED1);
-    // gpio_mode_setup(PORT_SWITCH, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, PIN_SWITCH);
+    gpio_setup();
 
     // setup I2C
     rcc_periph_clock_enable(RCC_GPIOB);

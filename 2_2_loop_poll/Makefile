@@ -2,7 +2,7 @@ PROJECT = 2_2_loop_poll
 BUILD_DIR = bin
 
 SHARED_DIR = ../common
-CFILES = 2_2_loop_poll.c wm8960.c i2s.c clock.c
+CFILES = 2_2_loop_poll.c wm8960.c i2s.c clock.c gpio.c
 
 DEVICE=stm32f407vet6
 OOCD_FILE = ../waveshare_core407v.cfg
