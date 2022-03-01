@@ -1,0 +1,70 @@
+- set up for codec
+- hooks attached but not connected to logic analyzer, including ground and o-scope probes
+- sends address
+- stalls during first i2c_transfer7 at i2c_common_v1.c:483
+    while (!(I2C_SR1(i2c) & I2C_SR1_ADDR));
+    // address is never sent
+    // NOTE: ADDR is not set after a nack reception, per HRM
+
+
+works with: d3 attached to pe10 and d1 or d2 attached to sda and empty hook on scl
+detaching d3 breaks it (d1 still attached to sda, and empty hook on scl)
+    not true, just stops triggering
+attaching d1 or d2 to scl breaks it (d1 still attached to sda, and d3 still attached to pe10)
+detaching everything from scl/sda breaks it
+jiggling hooks breaks it
+
+BNC adapter wired to DUT, BNC adapter disconnected from ADALM
+- still breaks when attaching second I2C logic probe
+
+set gpio output options GPIO_OSPEED_100MHZ?
+- tried 100MHz, 50MHz, 2MHz: no change
+also try enabling pullup (as seen in waveshare demo code?)
+- no change
+
+Wire harness connected to DUT, wire harness disconnected from ADALM/BNC board
+- still breaks when attaching second i2c logic probe
+
+any random wire touching second i2c pin
+- breaks if you try hard enough
+
+try different I2C pins?
+- tried PB10/PB11 (I2C2), same result
+
+Try with ground lead from wiring harness disconnected
+- still breaks
+
+try with ssd1306 display instead of codec
+- can't seem to provoke issue -> is the issue with the codec board?
+
+Try making a soldered board
+- didn't fix it
+
+# THINGS TO TRY
+
+Try temperature sensor with stm32f407
+
+Try ssd1306 with stm32f0
+    worked
+
+Try ssd1306 again with stm32f407
+    worked (should try again with actual ssd1306 demo program)
+
+Try codec with stm32f0
+    worked
+
+try with stm32f4 powered by wall wart
+
+try with stm32f4 powered by usb battery
+- with jlink & logic analyzer connected: seems to work reliably (can't get it to fail)
+
+try with debugger detached (flash board, detach debugger, try to use logic analyzer)
+- with stm32f4 powered by usb: works sometimes
+
+try with usb isolator
+
+break up i2c functions into component parts
+
+
+
+

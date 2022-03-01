@@ -1,0 +1,35 @@
+PROJECT = 2_2_loop_poll
+BUILD_DIR = bin
+
+SHARED_DIR = ../common
+CFILES = 2_2_loop_poll.c wm8960.c
+# CFILES += api.c
+# AFILES += api-asm.S
+
+# TODO - you will need to edit these two lines!
+DEVICE=stm32f407vet6
+OOCD_FILE = ../waveshare_core407v.cfg
+
+# You shouldn't have to edit anything below here.
+VPATH += $(SHARED_DIR)
+INCLUDES += $(patsubst %,-I%, . $(SHARED_DIR))
+OPENCM3_DIR=../libopencm3
+
+include $(OPENCM3_DIR)/mk/genlink-config.mk
+include ../rules.mk
+
+# run in a separate window while debugging
+openocd:
+	$(OOCD) -f $(OOCD_FILE)
+.PHONY: openocd
+
+# run while openocd is running
+debug:		$(PROJECT).debug
+%.debug:	%.elf
+	$(PREFIX)gdb $(PROJECT).elf -x ../gdbinit.gdb
+# %.debug:	%.elf
+# 	($(OOCD) -f $(OOCD_FILE) &); \
+# 	    $(PREFIX)gdb $(PROJECT).elf -x ../gdbinit.gdb;
+.PHONY:	debug
+
+include $(OPENCM3_DIR)/mk/genlink-rules.mk

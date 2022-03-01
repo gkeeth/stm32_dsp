@@ -1,0 +1,152 @@
+Microphone input (mic bias enabled)
+  LINPUT_1
+Headphone (?) input
+  LINPUT3 (DC coupled) (tip, normalled to HEADPHONE_L, disconnected by plug, for jack detection)
+  RINPUT1 (AC coupled) (sleeve)
+Headphone output (capacitor-coupled)
+  HP_L (tip)
+  HP_R (ring 1)
+Speaker output (DC-coupled)
+  SPK_LN
+  SPK_LP
+  SPK_RN
+  SPK_RP
+
+
+TRRS pinout:
+  T  HEADPHONE_L, LINPUT_L3 (normalled, disconnected by plug, for jack detection)
+  R1 HEADPHONE_R
+  R2 GND
+  S  INTPUT_R1 (AC-coupled)
+
+Codec inputs/outputs:
+  LINPUT1:      MEMS mic
+  RINPUT1:      TRRS mic (sleeve)
+  LINPUT2:      unused
+  RINPUT2:      unused
+  LINPUT3:      normalled to HP_L (disconnected when jack plugged in, for jack detection)
+  RINPUT3:      unused
+  SPK_LP:       speaker
+  SPK_LN:       speaker
+  SPK_RP:       speaker
+  SPK_RN:       speaker
+  HP_L:         TRRS tip
+  HP_R:         TRRS ring 1
+
+24 MHz clock attached to MCLK
+WM8960 is I2S master
+
+== Input signal path
+single-ended microphone inputs:
+- mic signal to LINPUT1 or RINPUT1
+- internal non-inverting input of input PGA switched to VMID
+
+gain of mic PGAs controlled by software or ALC/limiter. When ALC is used, gain
+should not be set manually. When ALC is not used, gain is set with LINVOL[5:0]
+and RINVOL[5:0]
+
+input PGAs & boost mixers enabled by AINL and AINR register bits
+
+
+
+
+== CONFIGURATION STEPS
+- enable L/R input PGAs
+  - AINL/AINR/LMIC/RMIC = 1
+- set single-ended mic input L/R
+  - LMN1/RMN1 = 1 (LINPUT1/RINPUT1 to PGA inverting input)
+  - LMP2/LMP3/RMP2/RMP3 = 0 (disconnect L/RINPUT2/3 from PGA, connect PGA +input to VMID)
+  - LMIC2B/RMIC2B = 1 (connect input PGAs to boost mixer)
+- enable zero cross detector (optional, to change gain only at zero crossings)
+  - LIZC/RIZC = 0
+  - TOEN = 1 (optional, for zero-crossing timeout)
+  - TOCLKSEL = 0 or 1 (optional, for zero-crossing timeout. 0 = slower, 1 = faster)
+- set input PGA volume (if not using ALC)
+  - LINVOL[5:0]/RINVOL[5:0]
+  - IPVU = 1 (gains not updated until IPVU written, can be IPVU bit in L or R register)
+- enable ALC (if not using manual volume)
+  - ??
+- unmute
+  - LINMUTE/RINMUTE = 0
+- configure mic input boost (00 = +0dB .. 11 = +29dB)
+  - LMICBOOST[1:0]/RMICBOOST[1:0]
+- configure line input boost (000 = mute, 001 = -12dB ... 111 = +6dB (3dB steps)
+  - LIN2BOOST/LIN3BOOST/RIN2BOOST/RIN3BOOST
+- mic biasing doesn't need to be enabled
+  - MICB = 0 (disable bias)
+  - MBSEL (0 = 0.9 * AVDD, 1 = 0.65 * AVDD)
+- enable ADCs
+  - ADCL/ADCR = 1
+- set ADC output polarity & channel swapping (nothing necessary)
+  - ADCPOL[1:0]: 00 = no inversion, 01 = L inverted, 10 = R inverted, 11 = both inverted
+  - DATSEL[1:0]: 00 = no swap, 01 = right data comes from left ADC, 10 = left data comes from right ADC, 11 = both channels swapped
+- set digital (ADC) volume
+  - LADCVOL[7:0]/RADCVOL[7:0]: 0x00 = digital mute, 0xFF = +30dB in 0.5dB steps
+  - ADCVU to update L & R gains
+- ADC digital filters (keep at default = HPF enabled)
+  - ADCHPD to disable high pass filter (0 = HPF enabled)
+- ALC (doesn't need to be enabled)
+  - ALCSEL[1:0] to enable L/R
+  - MAXGAIN to set max PGA gain
+  - ALCL to set target level
+  - MINGAIN to set min PGA gain
+  - HLD to set hold time before increasing gain
+  - ALCMODE set ALC/limiter mode
+  - DCY to set decay time
+  - ATK to set attack time
+  - ADC_ALC_SR to set ALC sample rate
+  - NGTH to set noise gate threshold
+  - NGAT to enable noise gate
+- enable DAC
+  - DACL/DACR = 1
+- DAC digital volume control
+  - LDACVOL[7:0]/RDACVOL[7:0]: 0x00 = digital mute, 0x01 = -127dB, 0xFF = 0dB (0.5dB steps)
+  - DACVU: update L/R dac volume control
+- DAC soft mute
+  - DACMU = 1 for muted via digital soft mute (need to set to 0 for audio!)
+  - DACSMM: soft mute mode. 0 = volume will ramp immediately when disabling DACMU. 1 = volume will ramp slowly
+  - DACMR: mute rate. 0 = fast ramp, 1 = slow ramp
+- DAC de-emphasis (don't enable)
+  - DEEMPH[1:0]: 00 - disabled
+- DAC output phase & mixing - default is fine
+  - DACPOL[1:0] = 00 -> dac not inverted
+  - DMONOMIX: 0 = stereo (default), 1 = mono mixed
+- 3D stereo - default is fine
+  - 3DEN = 0 for disabled (default)
+- output mixers
+  - LOMIX/ROMIX = 1 (enable output mixers)
+  - LD2LO/RD2RO = 1 (enable DACs to output mixer)
+  - LI2LOVOL/RI2ROVOL = 0, LI2LO/RI2RO = 0 (line in bypass disabled)
+  - LB2LOVOL/RB2ROVOL = 0, LB2LO/RB2RO = 0 (boost bypass disabled)
+  - LI2MO/RI2MO = 0, OUT3 = 0 (mono output disabled)
+- analog outputs
+  - headphone output
+    - LOUT1VOL/ROUT1VOL[6:0]: headphone volume. 0b1111111 = +6dB ...1dB steps to... 0b0110000 = -73dB. Below is analog mute
+    - OUT1VU: headphone volume update
+    - LO1ZC/RO1ZC: zero cross detector enable
+  - speaker output
+    - SPKLVOL[6:0]/SPKRVOL[6:0]: speaker volume. 0b1111111 = +6dB ...1dB steps to... 0b0110000 = -73dB. Below is analog mute
+    - SPKVU: speaker volume update
+    - SPKLZC/SPKRZC: zero cross detector enable
+    - DCGAIN[2:0] boosts speaker DC level - leave at 0?
+    - ACGAIN[2:0] boosts speaker AC level - leave at 0?
+  - enable outputs
+    - LOUT1/ROUT1 = 1: enable headphone outputs
+    - SPKL/SPKR = 1: enable speaker volume control
+    - SPK_OP_EN[1:0] = 11: enable speaker outputs
+        NOTE: SYSCLK must be active, and DCLKDIV should be set for a classD clock between 700kHz and 800kHz
+- speaker clocking
+  - set DCLKDIV to give proper class D clock relative to SYSCLK
+  - set SPK_OP_EN[1:0] to enable speaker outputs
+- thermal shutdown
+  - TSDEN = 1 to enable thermal shutdown (default)
+  - TSENSEN = 1 to enable temperature sensor (default)
+- I2S config TODO
+- Clocking config - set up for 48kHz sampling (24MHz mclk)
+  - mclk: 24MHz
+  - sysclk: 12.288 MHz (via PLL, PLLPRESCALE=2, SYSCLKDIV=2, N=0x8, K=0x3126E8)
+  - ADC/DAC sampling rate: 48kHz (ADCDIV/DACDIV = 000)
+  - BCLK: 64fs = 3.072MHz (24 bit data, use 32fs for 16bit data?) BCLKDIV=4 (0b0100)
+  - class d clock: between 700kHz and 800kHz: DCLKDIV = 0b111 (div by 16)
+
+
