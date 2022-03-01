@@ -14,9 +14,8 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/i2c.h>
-#include <libopencm3/cm3/nvic.h>
-#include <libopencm3/cm3/systick.h>
 
+#include "clock.h"
 #include "i2s.h"
 #include "wm8960.h"
 
@@ -42,26 +41,8 @@
 #define PORT_SWITCH GPIOD
 #define PIN_SWITCH GPIO10
 
-volatile uint32_t counter = 0;
-
-void sys_tick_handler(void) {
-    ++counter;
-}
-
-uint32_t millis(void);
-uint32_t millis(void) {
-    return counter;
-}
-
 static void setup(void) {
-    // use external 8MHz crystal to generate 168MHz clock
-    rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ]);
-    STK_CVR = 0; // clear systick to start immediately
-
-    // every 1ms (1000 Hz)
-    systick_set_frequency(1000, rcc_ahb_frequency);
-    systick_counter_enable();
-    systick_interrupt_enable();
+    clock_setup();
 
     // setup GPIOs
     rcc_periph_clock_enable(RCC_GPIOD);

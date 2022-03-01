@@ -2,7 +2,7 @@ PROJECT = 2_2_loop_poll
 BUILD_DIR = bin
 
 SHARED_DIR = ../common
-CFILES = 2_2_loop_poll.c wm8960.c
+CFILES = 2_2_loop_poll.c wm8960.c clock.c
 # CFILES += api.c
 # AFILES += api-asm.S
 
