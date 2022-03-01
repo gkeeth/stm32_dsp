@@ -74,81 +74,6 @@ void wm8960_write_reg(uint8_t reg_number) {
 }
 
 void wm8960_init(uint8_t wordlength) {
-#if 1
-    // these are copied from the waveshare source
-    wm8960_write_reg(15); // reset
-    reg[0x19] = 0x00D4; // 25. 0b111111100 = 0x01FC. 0xD4 = 0b011010100. Difference is left disabled & VMIDSEL divider
-    wm8960_write_reg(0x19);
-
-    // ****************
-    // reg[0x1a] = 0x01f8; // 26. 0b111111001 = 0x1f9 (the same except grbk enabled PLL)
-    reg[0x1a] = 0x01f9; // grbk
-    wm8960_write_reg(0x1a);
-
-    reg[0x2f] = 0x003c; // 47. 0b000111100 = 0x3c (the same)
-    wm8960_write_reg(0x2f);
-
-    // ***************
-    // reg[0x04] = 0x0000; // 4. 0b000000101 = 0x5. Difference is CLKSEL and SYSCLKDIV
-    reg[0x04] = 0x0005; // grbk setting TODO
-    wm8960_write_reg(0x04); // configure clock
-
-    // reg[0x07] = 0x0002; // original waveshare (slave)
-    reg[0x07] = 0x0002 | (0x1 << 6); // 7. matches
-    wm8960_write_reg(0x07); // I2S format, 16 bit word length
-
-    // ***********************
-    // with reg8 commented (at reset default) and reg4 at 0 (reset default), there is RXSDA activity although I2S bus data is malformed
-    // with reg8 uncommented or reg4 at 0x5 (grbk), no RXSDA activity.
-    // reg[0x08] = 0b111000000; // default
-    // reg[0x08] = 0b111000111; // grbk
-    reg[0x08] = 0b111000100; // grbk try with double fast bclk
-    wm8960_write_reg(0x08); // grbk
-
-    // ********************
-    reg[52] = 0b000111000; // SDM = 1, PLLPRESCALE = 1, N=0x8 grbk
-    reg[53] = 0x31; // grbk
-    reg[54] = 0x26; // grbk
-    reg[55] = 0xe8; // grbk
-    wm8960_write_reg(52); // grbk
-    wm8960_write_reg(53); // grbk
-    wm8960_write_reg(54); // grbk
-    wm8960_write_reg(55); // grbk
-
-    reg[0x00] = 0x003f; // input PGAs 0/1.
-    reg[0x01] = 0x003f | 0x0100;
-    wm8960_write_reg(0x00);
-    wm8960_write_reg(0x01);
-    reg[0x20] = 0x0000; // input signal path 32/33. 
-    reg[0x21] = 0x0008 | 0x0100;
-    wm8960_write_reg(0x20);
-    wm8960_write_reg(0x21);
-    reg[0x2b] = 0x0000; // input boost mixer 43/44. 
-    reg[0x2c] = 0x0000;
-    wm8960_write_reg(0x2b);
-    wm8960_write_reg(0x2c);
-    reg[0x05] = 0x000c; // 5. grbk 0x0000
-    wm8960_write_reg(0x05);
-    reg[0x15] = 0x00c3; // ADC digital volume 21/22. 
-    reg[0x16] = 0x00c3 | 0x0100;
-    wm8960_write_reg(0x15);
-    wm8960_write_reg(0x16);
-    reg[0x17] = 0x01c8; // 23. 
-    wm8960_write_reg(0x17);
-    reg[0x14] = 0x00f9; // noise gate control 20. 
-    wm8960_write_reg(0x14);
-    reg[0x0a] = 0x00ff; // digital output volume 10/11. 
-    reg[0x0b] = 0x00ff | 0x0100;
-    wm8960_write_reg(0x0a);
-    wm8960_write_reg(0x0b);
-    reg[0x05] = 0x0000; // dac soft mute 5/6. 
-    reg[0x06] = 0x0000;
-    wm8960_write_reg(0x05);
-    wm8960_write_reg(0x06);
-    reg[0x10] = 0x0000; // disable 3D enhancement 16. 
-    wm8960_write_reg(0x10);
-#else
-
     // TODO: validate settings via headphones, then uncomment speaker enable below
     // could use ADCLRCLK configuration to output sysclk on ADCLRCLK pin
 
@@ -261,11 +186,6 @@ void wm8960_init(uint8_t wordlength) {
     reg[54] = 0x26;
     reg[55] = 0xe8;
 
-    // TODO: bypass / loopback
-    // reg[45] |= 1 << 7; // LB2LO = 1
-    // reg[46] |= 1 << 7; // RB2RO = 1
-    // reg[9] |= 1; // LOOPBACK
-
     // update physical registers
     wm8960_write_reg(15); // reset codec
     wm8960_write_reg(25); // power management 1: AINL/AINR, ADCL/ADCR
@@ -297,6 +217,5 @@ void wm8960_init(uint8_t wordlength) {
     wm8960_write_reg(45); // TODO: LB2LO
     wm8960_write_reg(46); // TODO: RB2RO
     wm8960_write_reg(9); // TODO: LOOPBACK
-#endif
 }
 
