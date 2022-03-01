@@ -4,16 +4,14 @@
  * I2S2_ext for transmit
  *
  * I2S2_WS: PB12
- * I2S2_SD: PB15 (Rx)
- * I2S2ext_SD: PB14 (Tx)
+ * I2S2_SD: PB15 (DAC)
+ * I2S2ext_SD: PB14 (ADC)
  * I2S2_CK: PB13
  *
  */
 
-#include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/spi.h>
-#include <libopencm3/stm32/i2c.h>
 
 #include "clock.h"
 #include "gpio.h"
