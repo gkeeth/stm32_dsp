@@ -2,11 +2,8 @@ PROJECT = 2_2_loop_poll
 BUILD_DIR = bin
 
 SHARED_DIR = ../common
-CFILES = 2_2_loop_poll.c wm8960.c clock.c
-# CFILES += api.c
-# AFILES += api-asm.S
+CFILES = 2_2_loop_poll.c wm8960.c i2s.c clock.c
 
-# TODO - you will need to edit these two lines!
 DEVICE=stm32f407vet6
 OOCD_FILE = ../waveshare_core407v.cfg
 

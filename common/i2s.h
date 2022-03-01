@@ -17,4 +17,7 @@
 #define I2S2_EXT_SR             SPI_SR(I2S2_EXT_BASE)
 #define I2S3_EXT_SR             SPI_SR(I2S3_EXT_BASE)
 
+void i2s_setup(void);
+void i2s_enable(void);
+
 #endif // I2S_H
