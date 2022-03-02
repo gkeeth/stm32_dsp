@@ -74,7 +74,6 @@ void wm8960_write_reg(uint8_t reg_number) {
     i2c_transfer7(I2C1, CODEC_ADDRESS, w, 2, 0, 0);
 }
 
-// void wm8960_init(uint8_t data_length, uint8_t channel_length) {
 void wm8960_init(data_length_t data_length, channel_length_t channel_length, i2s_io_method_t i2s_io_method) {
     i2s_setup(data_length, channel_length, i2s_io_method);
     // TODO: validate settings via headphones, then uncomment speaker enable below

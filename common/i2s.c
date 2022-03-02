@@ -1,16 +1,16 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
+#include <libopencm3/cm3/nvic.h>
 #include "i2s.h"
 
 #include "pin_definitions.h"
 
 // setup I2S peripheral as I2S slave. Note: does not enable peripheral.
 //
-//
 // data_length: number of bits in data word (16, 24, or 32)
 // channel_length: number of bits per channel per frame (16 or 32)
+// i2s_io_method: io method (polling, interrupt, or DMA)
 void i2s_setup(data_length_t data_length, channel_length_t channel_length, i2s_io_method_t i2s_io_method) {
-// void i2s_setup(uint8_t data_length, uint8_t channel_length) {
     // Configure I2S pins/clocks
     rcc_periph_clock_enable(RCC_GPIOB);
     rcc_periph_clock_enable(RCC_SPI2);
@@ -52,7 +52,12 @@ void i2s_setup(data_length_t data_length, channel_length_t channel_length, i2s_i
     SPI2_I2SCFGR |= SPI_I2SCFGR_I2SCFG_SLAVE_TRANSMIT << SPI_I2SCFGR_I2SCFG_LSB;
     I2S2_EXT_I2SCFGR |= SPI_I2SCFGR_I2SCFG_SLAVE_RECEIVE << SPI_I2SCFGR_I2SCFG_LSB;
 
-    // set interrupt sources and DMA, if applicable, by writing SPI_CR2
+    if (i2s_io_method == I2S_INTERRUPT) {
+        nvic_enable_irq(NVIC_SPI2_IRQ);
+        spi_enable_rx_buffer_not_empty_interrupt(I2S2_EXT_BASE);
+    } else if (i2s_io_method == I2S_DMA) {
+        // set DMA in SPI_CR2
+    }
     // (nothing to do here for polling)
 }
 

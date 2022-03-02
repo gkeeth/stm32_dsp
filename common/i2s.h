@@ -21,7 +21,6 @@ typedef enum {DATA_LENGTH_16, DATA_LENGTH_24, DATA_LENGTH_32} data_length_t;
 typedef enum {CHANNEL_LENGTH_16, CHANNEL_LENGTH_32} channel_length_t;
 typedef enum {I2S_POLL, I2S_INTERRUPT, I2S_DMA} i2s_io_method_t;
 
-/* void i2s_setup(uint8_t data_length, uint8_t channel_length); */
 void i2s_setup(data_length_t data_length, channel_length_t channel_length, i2s_io_method_t i2s_io_method);
 void i2s_enable(void);
 
