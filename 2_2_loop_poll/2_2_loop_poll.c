@@ -1,7 +1,7 @@
 /*
- * Example 2.2: Loop-based polling
- * SPI/I2S2 for receive
- * I2S2_ext for transmit
+ * Example 2.2: polling-based loop
+ * SPI/I2S2 for transmit
+ * I2S2_ext for receive
  *
  * I2S2_WS: PB12
  * I2S2_SD: PB15 (DAC)
