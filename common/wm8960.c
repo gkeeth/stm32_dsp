@@ -2,6 +2,7 @@
 
 #include <libopencm3/stm32/i2c.h>
 #include "wm8960.h"
+#include "i2s.h"
 
 static uint16_t reg[] = { // reset values
     0b010010111, //  0. left input volume
@@ -73,7 +74,9 @@ void wm8960_write_reg(uint8_t reg_number) {
     i2c_transfer7(I2C1, CODEC_ADDRESS, w, 2, 0, 0);
 }
 
-void wm8960_init(uint8_t wordlength) {
+// void wm8960_init(uint8_t data_length, uint8_t channel_length) {
+void wm8960_init(data_length_t data_length, channel_length_t channel_length, i2s_io_method_t i2s_io_method) {
+    i2s_setup(data_length, channel_length, i2s_io_method);
     // TODO: validate settings via headphones, then uncomment speaker enable below
     // could use ADCLRCLK configuration to output sysclk on ADCLRCLK pin
 
@@ -140,10 +143,10 @@ void wm8960_init(uint8_t wordlength) {
     //
     // 24 bits
     // 16 bits
-    if (wordlength == 16) {
+    if (data_length == DATA_LENGTH_16) {
         // reg[7] = 0b001000001; // left-justified, 16 bits, master
         reg[7] = 0b001000010; // I2S format, 16 bits, master
-    } else if (wordlength == 24) {
+    } else if (data_length == DATA_LENGTH_24) {
         // reg[7] = 0b001001001; // left-justified, 24 bits, master
         reg[7] = 0b001001010; // I2S format, 24 bits, master
     } else {
@@ -164,13 +167,11 @@ void wm8960_init(uint8_t wordlength) {
     // DCLKDIV = 0b111 -> sysclk/16 = 768kHz (default)
     // BCLKDIV = 0b0100 -> sysclk/4 = 64fs = 3.072MHz (for 24bit words)
     // BCLKDIV = 0b0111 -> sysclk/8 = 32fs = 1.536MHz (for 16bit words)
-    if (wordlength == 16) {
+    if (data_length == DATA_LENGTH_16 && channel_length == CHANNEL_LENGTH_16) {
         reg[8] |= (1 << 2) | (1 << 1) | (1 << 0); // BCLKDIV = 0b0111 (sysclk/8)
-    } else if (wordlength == 24) {
-        reg[8] |= (1 << 2); // BCLKDIV = 0b0100 (sysclk/4)
+        // reg[8] |= (1 << 2); // BCLKDIV = 0b0100 (sysclk/4) -> 32 bits per frame
     } else {
-        // should not get here, but use same as 24 bits because that will give
-        // enough BCLKs for up to 32 bit words
+        // 32 BCLKs per channel per frame; enough for up to 32 bits per word
         reg[8] |= (1 << 2); // BCLKDIV = 0b0100 (sysclk/4)
     }
 
@@ -214,8 +215,6 @@ void wm8960_init(uint8_t wordlength) {
     // wm8960_write_reg(49); // SPK_OP_EN -- SET UP CLOCKS FIRST
     wm8960_write_reg(5);  // DACMU - do this last
 
-    wm8960_write_reg(45); // TODO: LB2LO
-    wm8960_write_reg(46); // TODO: RB2RO
-    wm8960_write_reg(9); // TODO: LOOPBACK
+    i2s_enable();
 }
 

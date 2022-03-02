@@ -26,12 +26,7 @@ static void setup(void) {
     gpio_setup();
     i2c_setup();
 
-    i2s_setup();
-
-    // 2.5. configure codec
-    wm8960_init(16);
-
-    i2s_enable();
+    wm8960_init(DATA_LENGTH_16, CHANNEL_LENGTH_16, I2S_POLL);
 }
 
 int main(void) {
@@ -53,24 +48,29 @@ int main(void) {
         while (!(I2S2_EXT_SR & SPI_SR_RXNE));
 
         if (I2S2_EXT_SR & SPI_SR_CHSIDE) {
-            // left channel received
-            left_in_sample = I2S2_EXT_DR;
-            // left_out_sample = left_in_sample;
-            left_out_sample = 0xAA55;
-            while (!(SPI2_SR & SPI_SR_TXE));
-            SPI2_DR = left_out_sample;
-        } else {
             // right channel received
             right_in_sample = I2S2_EXT_DR;
-            // right_out_sample = right_in_sample;
-            // if (right_out_sample == 0x7FFF) {
-            //     right_out_sample = 0x8000;
-            // } else {
-            //     right_out_sample = 0x7FFF;
-            // }
-            right_out_sample = 0x55AA;
+            right_out_sample = right_in_sample;
+
+            // delay to wait for the next frame to start transmitting
+            // in a real program this would be unnecessary because processing
+            // the samples takes time
+            for (volatile uint8_t n = 10; n; --n);
+
             while (!(SPI2_SR & SPI_SR_TXE));
             SPI2_DR = right_out_sample;
+        } else {
+            // left channel received
+            left_in_sample = I2S2_EXT_DR;
+            left_out_sample = left_in_sample;
+
+            // delay to wait for the next frame to start transmitting
+            // in a real program this would be unnecessary because processing
+            // the samples takes time
+            for (volatile uint8_t n = 10; n; --n);
+
+            while (!(SPI2_SR & SPI_SR_TXE));
+            SPI2_DR = left_out_sample;
         }
 
         if ((millis() - blink_delay) > last_flash_millis) {

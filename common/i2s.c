@@ -5,7 +5,12 @@
 #include "pin_definitions.h"
 
 // setup I2S peripheral as I2S slave. Note: does not enable peripheral.
-void i2s_setup(void) {
+//
+//
+// data_length: number of bits in data word (16, 24, or 32)
+// channel_length: number of bits per channel per frame (16 or 32)
+void i2s_setup(data_length_t data_length, channel_length_t channel_length, i2s_io_method_t i2s_io_method) {
+// void i2s_setup(uint8_t data_length, uint8_t channel_length) {
     // Configure I2S pins/clocks
     rcc_periph_clock_enable(RCC_GPIOB);
     rcc_periph_clock_enable(RCC_SPI2);
@@ -20,16 +25,31 @@ void i2s_setup(void) {
     //   - choose number of bits per channel for the frame through CHLEN.
     //   - select mode (tx or rx) for slave through I2SCFG[1:0].
     SPI2_I2SCFGR |= SPI_I2SCFGR_I2SMOD;
-    SPI2_I2SCFGR |= SPI_I2SCFGR_I2SSTD_I2S_PHILIPS << SPI_I2SCFGR_I2SSTD_LSB;
-    SPI2_I2SCFGR |= SPI_I2SCFGR_DATLEN_16BIT << SPI_I2SCFGR_DATLEN_LSB;
-    // CHLEN set to 0 (for 16 bits per channel per frame)
-    // SPI2_I2SCFGR |= SPI_I2SCFGR_CHLEN; // 32 bits per channel per frame
-    SPI2_I2SCFGR |= SPI_I2SCFGR_I2SCFG_SLAVE_TRANSMIT << SPI_I2SCFGR_I2SCFG_LSB;
-
     I2S2_EXT_I2SCFGR |= SPI_I2SCFGR_I2SMOD;
+    SPI2_I2SCFGR |= SPI_I2SCFGR_I2SSTD_I2S_PHILIPS << SPI_I2SCFGR_I2SSTD_LSB;
     I2S2_EXT_I2SCFGR |= SPI_I2SCFGR_I2SSTD_I2S_PHILIPS << SPI_I2SCFGR_I2SSTD_LSB;
-    I2S2_EXT_I2SCFGR |= SPI_I2SCFGR_DATLEN_16BIT << SPI_I2SCFGR_DATLEN_LSB;
-    // I2S2_EXT_I2SCFGR |= SPI_I2SCFGR_CHLEN; // 32 bits per channel per frame
+
+    if (data_length == DATA_LENGTH_16) {
+        SPI2_I2SCFGR |= SPI_I2SCFGR_DATLEN_16BIT << SPI_I2SCFGR_DATLEN_LSB;
+        I2S2_EXT_I2SCFGR |= SPI_I2SCFGR_DATLEN_16BIT << SPI_I2SCFGR_DATLEN_LSB;
+    } else if (data_length == DATA_LENGTH_24) {
+        SPI2_I2SCFGR |= SPI_I2SCFGR_DATLEN_24BIT << SPI_I2SCFGR_DATLEN_LSB;
+        I2S2_EXT_I2SCFGR |= SPI_I2SCFGR_DATLEN_24BIT << SPI_I2SCFGR_DATLEN_LSB;
+    } else if (data_length == DATA_LENGTH_32) {
+        SPI2_I2SCFGR |= SPI_I2SCFGR_DATLEN_32BIT << SPI_I2SCFGR_DATLEN_LSB;
+        I2S2_EXT_I2SCFGR |= SPI_I2SCFGR_DATLEN_32BIT << SPI_I2SCFGR_DATLEN_LSB;
+    } else {
+        // shouldn't get here; use 16
+        SPI2_I2SCFGR |= SPI_I2SCFGR_DATLEN_16BIT << SPI_I2SCFGR_DATLEN_LSB;
+        I2S2_EXT_I2SCFGR |= SPI_I2SCFGR_DATLEN_16BIT << SPI_I2SCFGR_DATLEN_LSB;
+    }
+
+    if (channel_length == CHANNEL_LENGTH_32) { // CHLEN = 0 for 16 bits per channel per frame
+        SPI2_I2SCFGR |= SPI_I2SCFGR_CHLEN;
+        I2S2_EXT_I2SCFGR |= SPI_I2SCFGR_CHLEN;
+    }
+
+    SPI2_I2SCFGR |= SPI_I2SCFGR_I2SCFG_SLAVE_TRANSMIT << SPI_I2SCFGR_I2SCFG_LSB;
     I2S2_EXT_I2SCFGR |= SPI_I2SCFGR_I2SCFG_SLAVE_RECEIVE << SPI_I2SCFGR_I2SCFG_LSB;
 
     // set interrupt sources and DMA, if applicable, by writing SPI_CR2
