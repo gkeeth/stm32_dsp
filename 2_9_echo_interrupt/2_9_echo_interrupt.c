@@ -6,9 +6,9 @@
  *          |              |
  *          ---- < gain-----
  *
- * out = in + Delay(in + gain * Delay(
+ * Output is input plus delayed version of input, and the delayed signal is fed
+ * back to the input of the delay.
  *
- * Output is input plus delayed version of input
  * SPI/I2S2 for transmit
  * I2S2_ext for receive
  *
