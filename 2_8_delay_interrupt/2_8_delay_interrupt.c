@@ -24,8 +24,8 @@
 #include "pin_definitions.h"
 
 #define BUFFER_SIZE 2000
-volatile uint16_t lbuffer[BUFFER_SIZE];
-volatile uint16_t rbuffer[BUFFER_SIZE];
+volatile int16_t lbuffer[BUFFER_SIZE];
+volatile int16_t rbuffer[BUFFER_SIZE];
 volatile uint16_t lbuf_index = 0;
 volatile uint16_t rbuf_index = 0;
 
@@ -38,16 +38,15 @@ static void setup(void) {
 }
 
 void spi2_isr(void) {
-    uint16_t right_in_sample = 0;
-    uint16_t right_out_sample = 0;
-    uint16_t left_in_sample = 0;
-    uint16_t left_out_sample = 0;
-    uint16_t delayed = 0;
+    int16_t right_in_sample = 0;
+    int16_t right_out_sample = 0;
+    int16_t left_in_sample = 0;
+    int16_t left_out_sample = 0;
 
     gpio_set(GPIOD, GPIO11);
     if (I2S2_EXT_SR & SPI_SR_CHSIDE) {
         // right channel received
-        right_in_sample = I2S2_EXT_DR;
+        right_in_sample = (int16_t) I2S2_EXT_DR;
         right_out_sample = right_in_sample + rbuffer[rbuf_index];
         rbuffer[rbuf_index] = right_in_sample;
         rbuf_index = (rbuf_index + 1) % BUFFER_SIZE;
@@ -61,7 +60,7 @@ void spi2_isr(void) {
         SPI2_DR = right_out_sample;
     } else {
         // left channel received
-        left_in_sample = I2S2_EXT_DR;
+        left_in_sample = (int16_t) I2S2_EXT_DR;
         left_out_sample = left_in_sample + lbuffer[lbuf_index];
         lbuffer[lbuf_index] = left_in_sample;
         lbuf_index = (lbuf_index + 1) % BUFFER_SIZE;
