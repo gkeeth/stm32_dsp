@@ -1,9 +1,15 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/dma.h>
 #include <libopencm3/cm3/nvic.h>
 #include "i2s.h"
 
 #include "pin_definitions.h"
+
+uint16_t buffer_ping_in[I2S_BUFFER_SIZE];
+uint16_t buffer_pong_in[I2S_BUFFER_SIZE];
+uint16_t buffer_ping_out[I2S_BUFFER_SIZE];
+uint16_t buffer_pong_out[I2S_BUFFER_SIZE];
 
 // setup I2S peripheral as I2S slave. Note: does not enable peripheral.
 //
@@ -56,7 +62,47 @@ void i2s_setup(data_length_t data_length, channel_length_t channel_length, i2s_i
         nvic_enable_irq(NVIC_SPI2_IRQ);
         spi_enable_rx_buffer_not_empty_interrupt(I2S2_EXT_BASE);
     } else if (i2s_io_method == I2S_DMA) {
-        // set DMA in SPI_CR2
+        rcc_periph_clock_enable(RCC_DMA1);
+        // I2S2_EXT_RX: stream 3 channel 3
+        // SPI2_TX:     stream 4 channel 0
+        dma_stream_reset(DMA1, DMA_STREAM3);
+        dma_stream_reset(DMA1, DMA_STREAM4);
+        dma_channel_select(DMA1, DMA_STREAM3, DMA_SxCR_CHSEL_3);
+        dma_channel_select(DMA1, DMA_STREAM4, DMA_SxCR_CHSEL_0);
+        dma_set_priority(DMA1, DMA_STREAM3, DMA_SxCR_PL_HIGH);
+        dma_set_priority(DMA1, DMA_STREAM4, DMA_SxCR_PL_HIGH);
+        dma_enable_double_buffer_mode(DMA1, DMA_STREAM3);
+        dma_enable_double_buffer_mode(DMA1, DMA_STREAM4);
+        dma_set_memory_size(DMA1, DMA_STREAM3, DMA_SxCR_MSIZE_16BIT);
+        dma_set_memory_size(DMA1, DMA_STREAM4, DMA_SxCR_MSIZE_16BIT);
+        dma_set_peripheral_size(DMA1, DMA_STREAM3, DMA_SxCR_PSIZE_16BIT);
+        dma_set_peripheral_size(DMA1, DMA_STREAM4, DMA_SxCR_PSIZE_16BIT);
+        dma_enable_memory_increment_mode(DMA1, DMA_STREAM3);
+        dma_enable_memory_increment_mode(DMA1, DMA_STREAM4);
+        dma_set_transfer_mode(DMA1, DMA_STREAM3, DMA_SxCR_DIR_PERIPHERAL_TO_MEM);
+        dma_set_transfer_mode(DMA1, DMA_STREAM4, DMA_SxCR_DIR_MEM_TO_PERIPHERAL);
+        dma_enable_transfer_complete_interrupt(DMA1, DMA_STREAM3);
+        dma_enable_transfer_complete_interrupt(DMA1, DMA_STREAM4);
+
+        dma_set_number_of_data(DMA1, DMA_STREAM3, I2S_BUFFER_SIZE);
+        dma_set_number_of_data(DMA1, DMA_STREAM4, I2S_BUFFER_SIZE);
+
+        dma_set_peripheral_address(DMA1, DMA_STREAM3, (uint32_t) &I2S2_EXT_DR);
+        dma_set_peripheral_address(DMA1, DMA_STREAM4, (uint32_t) &SPI2_DR);
+
+        dma_set_memory_address(DMA1, DMA_STREAM3, (uint32_t) buffer_ping_in);
+        dma_set_memory_address(DMA1, DMA_STREAM4, (uint32_t) buffer_ping_out);
+        dma_set_memory_address_1(DMA1, DMA_STREAM3, (uint32_t) buffer_pong_in);
+        dma_set_memory_address_1(DMA1, DMA_STREAM4, (uint32_t) buffer_pong_out);
+
+        spi_enable_rx_dma(I2S2_EXT_BASE);
+        spi_enable_tx_dma(SPI2);
+
+        nvic_enable_irq(NVIC_DMA1_STREAM3_IRQ);
+        nvic_enable_irq(NVIC_DMA1_STREAM4_IRQ);
+
+        dma_enable_stream(DMA1, DMA_STREAM3);
+        dma_enable_stream(DMA1, DMA_STREAM4);
     }
     // (nothing to do here for polling)
 }
