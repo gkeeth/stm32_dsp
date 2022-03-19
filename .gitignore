@@ -4,3 +4,4 @@ bin/
 generated.*.ld
 doc/
 textbook_src/
+cmsis_dsp_build/build/*
