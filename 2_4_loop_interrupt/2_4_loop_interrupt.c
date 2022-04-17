@@ -27,18 +27,20 @@ static void setup(void) {
     gpio_setup();
     i2c_setup();
 
-    wm8960_init(DATA_LENGTH_16, CHANNEL_LENGTH_16, I2S_INTERRUPT);
+    wm8960_init(SAMPLING_RATE_48KHZ, DATA_LENGTH_16, CHANNEL_LENGTH_16, I2S_INTERRUPT);
 }
 
+volatile int16_t right_in_sample = 0;
+volatile int16_t right_out_sample = 0;
+volatile int16_t left_in_sample = 0;
+volatile int16_t left_out_sample = 0;
+
 void spi2_isr(void) {
-    uint16_t right_in_sample = 0;
-    uint16_t right_out_sample = 0;
-    uint16_t left_in_sample = 0;
-    uint16_t left_out_sample = 0;
 
     gpio_set(GPIOD, GPIO11);
     if (I2S2_EXT_SR & SPI_SR_CHSIDE) {
         // right channel received
+        gpio_set(GPIOD, GPIO10);
         right_in_sample = I2S2_EXT_DR;
         right_out_sample = right_in_sample;
 
@@ -47,8 +49,7 @@ void spi2_isr(void) {
         // the samples takes time
         for (volatile uint8_t n = 10; n; --n);
 
-        while (!(SPI2_SR & SPI_SR_TXE));
-        SPI2_DR = right_out_sample;
+        gpio_clear(GPIOD, GPIO10);
     } else {
         // left channel received
         left_in_sample = I2S2_EXT_DR;
@@ -58,8 +59,16 @@ void spi2_isr(void) {
         // in a real program this would be unnecessary because processing
         // the samples takes time
         for (volatile uint8_t n = 10; n; --n);
+    }
 
-        while (!(SPI2_SR & SPI_SR_TXE));
+
+    // in a real application, an interrupt should be fired on TXE.
+    // This blocking loop should be replaced with an if (SPI2_SR & SPI_SR_TXE)
+    while (!(SPI2_SR & SPI_SR_TXE));
+
+    if (SPI2_SR & SPI_SR_CHSIDE) {
+        SPI2_DR = right_out_sample;
+    } else {
         SPI2_DR = left_out_sample;
     }
     gpio_clear(GPIOD, GPIO11);
