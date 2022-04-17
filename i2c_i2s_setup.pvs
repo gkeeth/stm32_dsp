@@ -1,6 +1,6 @@
 [General]
 decode_signals=3
-meta_objs=2
+meta_objs=6
 views=1
 
 [D0]
@@ -50,14 +50,14 @@ color=4283341318
 conv_options=0
 conversion_type=0
 enabled=true
-name=TXMCLK
+name=PD11
 
 [D7]
 color=4294967295
 conv_options=0
 conversion_type=0
 enabled=true
-name=RXMCLK
+name=PD10
 
 [decode_signal0]
 channel0\assigned_signal_name=SCL
@@ -143,11 +143,35 @@ name=I\xb2S DAC
 
 [meta_obj0]
 assoc_view=0
+text=E
+time=22 serialization::archive 19 0 0 0 0 20300 0 1190 2030452 896667 0 -8 0 0 6
+type=time_marker
+
+[meta_obj1]
+assoc_view=0
+text=F
+time=22 serialization::archive 19 0 0 0 0 24475 0 13117 97892533 66152479 0 -8 0 0 6
+type=time_marker
+
+[meta_obj2]
+assoc_view=0
+text=C
+time=22 serialization::archive 19 0 0 0 0 244174 99999999 99910099 69058097 79491391 0 -8 0 0 6
+type=time_marker
+
+[meta_obj3]
+assoc_view=0
+text=D
+time=22 serialization::archive 19 0 0 0 0 244358 33333333 33197645 57600706 21181512 0 -8 0 0 6
+type=time_marker
+
+[meta_obj4]
+assoc_view=0
 text=A
 time=22 serialization::archive 19 0 0 0 0 22209650 0 2250644 11552011 73387467 0 -8 0 0 6
 type=time_marker
 
-[meta_obj1]
+[meta_obj5]
 assoc_view=0
 text=B
 time=22 serialization::archive 19 0 0 0 0 22309699 99999999 89761079 17769695 63215970 0 -8 0 0 6
@@ -162,9 +186,9 @@ D4\trace_height=36
 D5\trace_height=36
 D6\trace_height=36
 D7\trace_height=36
-offset=22 serialization::archive 19 0 0 0 0 243700 15466113 78553612 35760079 40510999 10548089 -8 0 0 6
-scale=2.5251168294041895e-08
+offset=22 serialization::archive 19 0 0 0 0 10749 20949245 72750079 83996521 69274561 98650505 -8 0 0 6
+scale=8.522269299239035e-08
 segment_display_mode=1
-splitter_state=@ByteArray(\0\0\0\xff\0\0\0\x1\0\0\0\x2\0\0\0h\0\0\t\x8b\x1\0\0\0\x1\x1\0\0\0\x1\0)
-v_offset=-147
+splitter_state=@ByteArray(\0\0\0\xff\0\0\0\x1\0\0\0\x2\0\0\0\x62\0\0\t\x91\x1\0\0\0\x1\x1\0\0\0\x1\0)
+v_offset=-214
 zero_offset=22 serialization::archive 19 0 0 0 0 0 0 0 0 0 0 0 0 0 6
