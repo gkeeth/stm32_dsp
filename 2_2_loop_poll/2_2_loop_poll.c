@@ -26,7 +26,7 @@ static void setup(void) {
     gpio_setup();
     i2c_setup();
 
-    wm8960_init(DATA_LENGTH_16, CHANNEL_LENGTH_16, I2S_POLL);
+    wm8960_init(SAMPLING_RATE_48KHZ, DATA_LENGTH_16, CHANNEL_LENGTH_16, I2S_POLL);
 }
 
 int main(void) {

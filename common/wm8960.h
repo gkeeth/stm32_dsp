@@ -11,6 +11,11 @@
 // TODO: make static?
 void wm8960_write_reg(uint8_t reg_number);
 
-void wm8960_init(data_length_t data_length, channel_length_t channel_length, i2s_io_method_t i2s_io_method);
+void wm8960_set_sample_rate(uint32_t sample_rate);
+
+void wm8960_init(sampling_rate_t sampling_rate,
+                 data_length_t data_length,
+                 channel_length_t channel_length,
+                 i2s_io_method_t i2s_io_method);
 
 #endif // WM8960_H

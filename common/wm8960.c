@@ -74,7 +74,18 @@ void wm8960_write_reg(uint8_t reg_number) {
     i2c_transfer7(I2C1, CODEC_ADDRESS, w, 2, 0, 0);
 }
 
-void wm8960_init(data_length_t data_length, channel_length_t channel_length, i2s_io_method_t i2s_io_method) {
+/*
+ * valid configurations are:
+ * - 48kHz sampling rate, 16 bit data length, 16 bit channel length
+ * - 24kHz sampling rate, 16 bit data length, 32 bit channel length
+ * - 8kHz sampling rate, 16 bit data length, 32 bit channel length
+ *
+ * other configurations are possible, but clocks need to be adjusted & verified
+ */
+void wm8960_init(sampling_rate_t sampling_rate,
+                 data_length_t data_length,
+                 channel_length_t channel_length,
+                 i2s_io_method_t i2s_io_method) {
     i2s_setup(data_length, channel_length, i2s_io_method);
     // TODO: validate settings via headphones, then uncomment speaker enable below
     // could use ADCLRCLK configuration to output sysclk on ADCLRCLK pin
@@ -161,16 +172,30 @@ void wm8960_init(data_length_t data_length, channel_length_t channel_length, i2s
     // ADCDIV = 0b000 -> sysclk/256 = 48kHz (default)
     // DACDIV = 0b000 -> sysclk/256 = 48kHz (default)
     reg[4] |= (1 << 0) | (1 << 2); // CLKSEL = 1, SYSCLKDIV = 2
+    if (sampling_rate == SAMPLING_RATE_48KHZ) {
+        // nothing to do; default is appropriate
+    } else if (sampling_rate == SAMPLING_RATE_24KHZ) {
+        reg[4] |= (1 << 7) | (1 << 4);
+    } else if (sampling_rate == SAMPLING_RATE_8KHZ) {
+        reg[4] |= (1 << 8) | (1 << 7) | (1 << 5) | (1 << 4);
+    }
 
     // clocking 2
     // DCLKDIV = 0b111 -> sysclk/16 = 768kHz (default)
     // BCLKDIV = 0b0100 -> sysclk/4 = 64fs = 3.072MHz (for 24bit words)
     // BCLKDIV = 0b0111 -> sysclk/8 = 32fs = 1.536MHz (for 16bit words)
-    if (data_length == DATA_LENGTH_16 && channel_length == CHANNEL_LENGTH_16) {
-        reg[8] |= (1 << 2) | (1 << 1) | (1 << 0); // BCLKDIV = 0b0111 (sysclk/8)
-        // reg[8] |= (1 << 2); // BCLKDIV = 0b0100 (sysclk/4) -> 32 bits per frame
+    // BCLKDIV = 0b1100 -> sysclk/24
+    if ((data_length == DATA_LENGTH_16 && channel_length == CHANNEL_LENGTH_16 && sampling_rate == SAMPLING_RATE_48KHZ)
+            || (data_length == DATA_LENGTH_16 && channel_length == CHANNEL_LENGTH_32 && sampling_rate == SAMPLING_RATE_24KHZ)) {
+        // BCLKDIV = 0b0111 (sysclk/8)
+        // 48kHz sampling with 16 bits per frame, or 24kHz with 32 bits per frame.
+        reg[8] |= (1 << 2) | (1 << 1) | (1 << 0);
+    } else if (data_length == DATA_LENGTH_16 && channel_length == CHANNEL_LENGTH_32 && sampling_rate == SAMPLING_RATE_8KHZ) {
+        // BCLKDIV = 0b1100 (sysclk/24)
+        // 8kHz sampling with 32 bits per frame.
+        reg[8] |= (1 << 3) | (1 << 2); // BCLKDIV = 0b1100 (sysclk/24)
     } else {
-        // 32 BCLKs per channel per frame; enough for up to 32 bits per word
+        // this is probably not a valid configuration
         reg[8] |= (1 << 2); // BCLKDIV = 0b0100 (sysclk/4)
     }
 

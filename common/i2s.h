@@ -17,6 +17,7 @@
 typedef enum {DATA_LENGTH_16, DATA_LENGTH_24, DATA_LENGTH_32} data_length_t;
 typedef enum {CHANNEL_LENGTH_16, CHANNEL_LENGTH_32} channel_length_t;
 typedef enum {I2S_POLL, I2S_INTERRUPT, I2S_DMA} i2s_io_method_t;
+typedef enum {SAMPLING_RATE_48KHZ, SAMPLING_RATE_24KHZ, SAMPLING_RATE_8KHZ} sampling_rate_t;
 
 #define PING 0
 #define PONG 1
