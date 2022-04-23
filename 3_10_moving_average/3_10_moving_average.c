@@ -28,7 +28,7 @@ static void setup(void) {
     gpio_setup();
     i2c_setup();
 
-    wm8960_init(SAMPLING_RATE_48KHZ, DATA_LENGTH_16, CHANNEL_LENGTH_16, I2S_INTERRUPT);
+    wm8960_init(SAMPLING_RATE_8KHZ, DATA_LENGTH_16, CHANNEL_LENGTH_32, I2S_INTERRUPT);
 }
 
 volatile int16_t right_in_sample = 0;
@@ -70,6 +70,7 @@ void spi2_isr(void) {
         // in a real program this would be unnecessary because processing
         // the samples takes time
         for (volatile uint8_t n = 10; n; --n);
+        left_out_sample = 0;
     }
 
 
