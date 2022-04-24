@@ -1,5 +1,9 @@
 /*
  * Example 3.17: 3 lowpass FIR filters cycled through with button presses
+ * 1. fc=600Hz
+ * 2. fc=1500Hz
+ * 3. fc=3000Hz
+ *
  * SPI/I2S2 for transmit
  * I2S2_ext for receive
  *
