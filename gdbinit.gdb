@@ -1,3 +1,7 @@
+set pagination off
+set print pretty on
+set confirm off
+
 target extended-remote localhost:3333
 monitor reset halt
 monitor reset init
