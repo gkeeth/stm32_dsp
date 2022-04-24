@@ -24,10 +24,17 @@
 #include "pin_definitions.h"
 
 // #include "maf5.h" // 5-point moving average
-// #include "lp55.h" // 55-point lowpass, fc ~2kHz
+// #include "lp55.h" // 55-point lowpass, fc = 2kHz
 // #include "bs2700.h" // 89-point bandstop with fc = 2700Hz
 // #include "bs2700_pyfda.h" // 89-point bandstop with fc = 2700Hz, generated with pyFDA to match bs2700.h
 #include "bp1750.h" // 81-point bandpass with fc = 1750Hz
+// #include "bp55.h"   // 55-point bandpass, fc = 2kHz
+// #include "bs55.h"   // 55-point bandstop, fc = 2kHz
+// #include "hp55.h"   // 55-point highpass, fc = 2kHz
+// #include "pass2b.h" // 55-point bandpass, 2 passbands
+// #include "pass3b.h" // 55-point bandpass, 3 passbands
+// #include "pass4b.h" // 55-point bandpass, 4 passbands
+// #include "comb14.h" // 55-point comb
 
 static void setup(void) {
     clock_setup();
