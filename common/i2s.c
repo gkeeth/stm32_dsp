@@ -6,10 +6,10 @@
 
 #include "pin_definitions.h"
 
-uint16_t buffer_ping_in[I2S_BUFFER_SIZE];
-uint16_t buffer_pong_in[I2S_BUFFER_SIZE];
-uint16_t buffer_ping_out[I2S_BUFFER_SIZE];
-uint16_t buffer_pong_out[I2S_BUFFER_SIZE];
+int16_t buffer_ping_in[I2S_BUFFER_SIZE];
+int16_t buffer_pong_in[I2S_BUFFER_SIZE];
+int16_t buffer_ping_out[I2S_BUFFER_SIZE];
+int16_t buffer_pong_out[I2S_BUFFER_SIZE];
 
 // setup I2S peripheral as I2S slave. Note: does not enable peripheral.
 //

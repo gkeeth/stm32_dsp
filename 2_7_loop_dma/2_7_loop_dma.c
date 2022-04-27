@@ -24,10 +24,10 @@
 #include "pin_definitions.h"
 
 // in i2s.c
-extern uint16_t buffer_ping_in[I2S_BUFFER_SIZE];
-extern uint16_t buffer_pong_in[I2S_BUFFER_SIZE];
-extern uint16_t buffer_ping_out[I2S_BUFFER_SIZE];
-extern uint16_t buffer_pong_out[I2S_BUFFER_SIZE];
+extern int16_t buffer_ping_in[I2S_BUFFER_SIZE];
+extern int16_t buffer_pong_in[I2S_BUFFER_SIZE];
+extern int16_t buffer_ping_out[I2S_BUFFER_SIZE];
+extern int16_t buffer_pong_out[I2S_BUFFER_SIZE];
 
 // track PING or PONG
 uint8_t rx_processing_buffer;
@@ -77,8 +77,8 @@ void dma1_stream4_isr(void) {
 }
 
 void process_buffer(void) {
-    uint16_t *rxbuf;
-    uint16_t *txbuf;
+    int16_t *rxbuf;
+    int16_t *txbuf;
 
     if (rx_processing_buffer == PING) {
         rxbuf = buffer_ping_in;
