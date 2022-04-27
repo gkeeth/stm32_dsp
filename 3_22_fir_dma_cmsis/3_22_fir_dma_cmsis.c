@@ -1,5 +1,5 @@
 /*
- * Example 3.21: DMA-based FIR
+ * Example 3.22: DMA-based FIR using Arm library function for filtering
  * SPI/I2S2 for transmit
  * I2S2_ext for receive
  *
