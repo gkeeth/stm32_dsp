@@ -49,7 +49,7 @@ void spi2_isr(void) {
     gpio_set(GPIOD, GPIO11);
     if (I2S2_EXT_SR & SPI_SR_CHSIDE) {
         // right channel received (headset mic / line in)
-        gpio_set(GPIOD, GPIO10);
+        gpio_set(GPIOE, GPIO0);
         right_in_sample = I2S2_EXT_DR;
 
         x[0][0] = (float) prbs(8000);
@@ -73,10 +73,9 @@ void spi2_isr(void) {
         }
 
         right_out_sample = (int16_t) yn[filter_number];
-        gpio_clear(GPIOD, GPIO10);
+        gpio_clear(GPIOE, GPIO0);
     } else {
         // left channel received (MEMS mic on board)
-        gpio_set(GPIOD, GPIO10);
         left_in_sample = I2S2_EXT_DR;
         left_out_sample = left_in_sample;
     }

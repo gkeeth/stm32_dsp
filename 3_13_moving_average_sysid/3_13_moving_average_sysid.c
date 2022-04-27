@@ -69,7 +69,7 @@ void spi2_isr(void) {
         right_in_f32 = (float) right_in_sample;
         adapt_in = (float) prbs(8000);
 
-        gpio_set(GPIOD, GPIO10);
+        gpio_set(GPIOE, GPIO0);
 
         // S, pSrc, pRef, pOut, pErr, blockSize
         // pSrc: prbs
@@ -85,7 +85,7 @@ void spi2_isr(void) {
             x[i] = x[i - 1];
         }
 
-        gpio_clear(GPIOD, GPIO10);
+        gpio_clear(GPIOE, GPIO0);
 
         right_out_sample = (int16_t) yn;
     } else {

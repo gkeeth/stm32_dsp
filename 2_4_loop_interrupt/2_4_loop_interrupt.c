@@ -40,7 +40,7 @@ void spi2_isr(void) {
     gpio_set(GPIOD, GPIO11);
     if (I2S2_EXT_SR & SPI_SR_CHSIDE) {
         // right channel received
-        gpio_set(GPIOD, GPIO10);
+        gpio_set(GPIOE, GPIO0);
         right_in_sample = I2S2_EXT_DR;
         right_out_sample = right_in_sample;
 
@@ -49,7 +49,7 @@ void spi2_isr(void) {
         // the samples takes time
         for (volatile uint8_t n = 10; n; --n);
 
-        gpio_clear(GPIOD, GPIO10);
+        gpio_clear(GPIOE, GPIO0);
     } else {
         // left channel received
         left_in_sample = I2S2_EXT_DR;

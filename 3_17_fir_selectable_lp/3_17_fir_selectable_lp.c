@@ -52,12 +52,11 @@ void spi2_isr(void) {
     gpio_set(GPIOD, GPIO11);
     if (I2S2_EXT_SR & SPI_SR_CHSIDE) {
         // right channel received (headset mic / line in)
-        gpio_set(GPIOD, GPIO10);
         right_in_sample = I2S2_EXT_DR;
         right_out_sample = right_in_sample;
     } else {
         // left channel received (MEMS mic on board)
-        gpio_set(GPIOD, GPIO10);
+        gpio_set(GPIOE, GPIO0);
         left_in_sample = I2S2_EXT_DR;
 
         x[0] = (float) prbs(8000);
@@ -71,7 +70,7 @@ void spi2_isr(void) {
         }
 
         left_out_sample = (int16_t) yn;
-        gpio_clear(GPIOD, GPIO10);
+        gpio_clear(GPIOE, GPIO0);
     }
 
     // in a real application, an interrupt should be fired on TXE.

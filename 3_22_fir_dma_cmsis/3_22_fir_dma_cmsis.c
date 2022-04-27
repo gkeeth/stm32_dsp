@@ -105,7 +105,7 @@ void process_buffer(void) {
         txbuf = buffer_pong_out;
     }
 
-    gpio_set(GPIOD, GPIO10);
+    gpio_set(GPIOE, GPIO0);
     for (i = 0; i < I2S_BUFFER_SIZE/2; i++) {
         x[i] = (float) prbs(8000);
     }
@@ -119,7 +119,7 @@ void process_buffer(void) {
         rxbuf++;
         *txbuf++ = (int16_t) y[i];
     }
-    gpio_clear(GPIOD, GPIO10);
+    gpio_clear(GPIOE, GPIO0);
     rx_buffer_full = 0;
     tx_buffer_empty = 0;
 }
@@ -136,7 +136,6 @@ int main(void) {
 
     last_flash_millis = millis();
 
-    gpio_clear(GPIOD, GPIO10);
     gpio_clear(GPIOD, GPIO11);
     while (1) {
         if (rx_buffer_full && tx_buffer_empty) {

@@ -101,7 +101,7 @@ void process_buffer(void) {
         txbuf = buffer_pong_out;
     }
 
-    gpio_set(GPIOD, GPIO10);
+    gpio_set(GPIOE, GPIO0);
     for (i = 0; i < I2S_BUFFER_SIZE/2; i++) {
         // left channel
         *txbuf++ = *rxbuf++;
@@ -120,7 +120,7 @@ void process_buffer(void) {
         rxbuf++;
         *txbuf++ = (int16_t) y[i];
     }
-    gpio_clear(GPIOD, GPIO10);
+    gpio_clear(GPIOE, GPIO0);
     rx_buffer_full = 0;
     tx_buffer_empty = 0;
 }

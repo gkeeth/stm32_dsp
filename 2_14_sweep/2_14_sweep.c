@@ -60,7 +60,7 @@ void spi2_isr(void) {
         right_out_sample = 0x55AA;
     } else {
         // left channel received
-        gpio_set(GPIOD, GPIO10);
+        gpio_set(GPIOE, GPIO0);
         left_in_sample = I2S2_EXT_DR;
         (void) left_in_sample;
 
@@ -74,7 +74,7 @@ void spi2_isr(void) {
         }
         i = (int16_t) float_index;
         left_out_sample = amplitude * sine8000[i];
-        gpio_clear(GPIOD, GPIO10);
+        gpio_clear(GPIOE, GPIO0);
     }
 
     // in a real application, an interrupt should be fired on TXE.

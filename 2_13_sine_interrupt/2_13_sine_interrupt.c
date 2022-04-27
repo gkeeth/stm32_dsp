@@ -56,7 +56,7 @@ volatile int16_t left_out_sample = 0;
 void spi2_isr(void) {
     gpio_set(GPIOD, GPIO11);
     if (I2S2_EXT_SR & SPI_SR_CHSIDE) {
-        gpio_set(GPIOD, GPIO10);
+        gpio_set(GPIOE, GPIO0);
         // right channel received
         right_in_sample = I2S2_EXT_DR;
         right_out_sample = right_in_sample;
@@ -80,7 +80,7 @@ void spi2_isr(void) {
     while (!(SPI2_SR & SPI_SR_TXE));
     if (SPI2_SR & SPI_SR_CHSIDE) {
         SPI2_DR = right_out_sample;
-        gpio_clear(GPIOD, GPIO10);
+        gpio_clear(GPIOE, GPIO0);
     } else {
         SPI2_DR = left_out_sample;
     }
