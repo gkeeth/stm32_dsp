@@ -57,7 +57,7 @@ color=4294967295
 conv_options=0
 conversion_type=0
 enabled=true
-name=PD10
+name=PE0
 
 [decode_signal0]
 channel0\assigned_signal_name=SCL
@@ -186,9 +186,9 @@ D4\trace_height=36
 D5\trace_height=36
 D6\trace_height=36
 D7\trace_height=36
-offset=22 serialization::archive 19 0 0 0 0 10749 20949245 72750079 83996521 69274561 98650505 -8 0 0 6
-scale=8.522269299239035e-08
+offset=22 serialization::archive 19 0 0 0 0 2947302 49856399 33998941 17369099 36551585 67933138 -8 0 0 6
+scale=1.10573323209396e-05
 segment_display_mode=1
 splitter_state=@ByteArray(\0\0\0\xff\0\0\0\x1\0\0\0\x2\0\0\0\x62\0\0\t\x91\x1\0\0\0\x1\x1\0\0\0\x1\0)
-v_offset=-214
+v_offset=-335
 zero_offset=22 serialization::archive 19 0 0 0 0 0 0 0 0 0 0 0 0 0 6
