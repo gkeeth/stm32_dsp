@@ -33,8 +33,8 @@
 #define AMPLITUDE 10000.0f
 // #include "impinv.h"
 // #include "bilinear.h"
-#include "bilinearw.h"
-// #include "elliptic.h"
+// #include "bilinearw.h"
+#include "elliptic.h"
 float w[NUM_SECTIONS][2] = {0};
 float dimpulse[BUFFER_SIZE];
 float response[BUFFER_SIZE];
