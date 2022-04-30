@@ -31,7 +31,8 @@
 
 #define BUFFER_SIZE 256
 #define AMPLITUDE 10000.0f
-#include "impinv.h"
+// #include "impinv.h"
+#include "bilinear.h"
 // #include "elliptic.h"
 float w[NUM_SECTIONS][2] = {0};
 float dimpulse[BUFFER_SIZE];
