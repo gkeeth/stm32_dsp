@@ -30,7 +30,8 @@
 
 // #include "impinv.h"
 // #include "bilinear.h"
-#include "elliptic.h"
+// #include "elliptic.h"
+#include "bp2000.h"
 float w[NUM_SECTIONS][2] = {0};
 
 static void setup(void) {
